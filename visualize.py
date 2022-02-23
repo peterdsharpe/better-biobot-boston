@@ -44,7 +44,7 @@ def make_plot(zoomed=False):
         x=region_data["dates"].astype(float)
         y=np.log(region_data["values"] / 1e3)
         y_stdev=estimated_log_stdev
-        n_bootstraps=2000
+        n_bootstraps=20
         n_fit_points=1800
         spline_degree=3
 
@@ -153,8 +153,7 @@ plt.gca().xaxis.set_minor_locator(
     p.mpl.dates.MonthLocator()
 )
 plt.xlim(right=datetime.datetime.today())
-# plt.ylim(bottom=0, top=12000)
-# plt.yscale('log')
+plt.ylim(bottom=0)
 plt.legend(
     ncol=2
 )
@@ -172,8 +171,7 @@ plt.gca().xaxis.set_minor_locator(
     p.mpl.dates.DayLocator()
 )
 plt.xlim(zoom_range)
-# plt.ylim(bottom=0, top=2000)
-# plt.yscale('log')
+plt.ylim(bottom=0)
 
 # plt.gcf().autofmt_xdate(rotation=45, ha='center')
 p.show_plot(
@@ -186,7 +184,16 @@ plt.savefig("assets/after.svg")
 
 for a in ax:
     a.set_yscale('log')
-    plt.ylim(bottom=0)
+    a.set_ylim(
+        bottom=np.array([
+            np.nanmin(dataset["values"])
+            for dataset in data.values()
+        ]).min() / 1e3,
+        top=np.array([
+            np.nanmax(dataset["values"])
+            for dataset in data.values()
+        ]).max() / 1e3,
+    )
 
 plt.savefig("assets/after-log.svg")
 
