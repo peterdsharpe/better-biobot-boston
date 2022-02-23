@@ -3,3 +3,4 @@ requests
 tabula-py
 pandas
 numpy
+lxml
