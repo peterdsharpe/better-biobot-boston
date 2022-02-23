@@ -4,6 +4,8 @@ A few scripts for visualizing
 the [COVID-19 wastewater data for the Boston area from Biobot Analytics](https://www.mwra.com/biobot/biobotdata.htm) in
 a way that, subjectively, seems easier to read and better about communicating uncertainty bounds.
 
+Before and after:
+
 ## After
 
 ![](assets/after-log.png)
