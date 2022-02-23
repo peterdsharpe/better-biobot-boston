@@ -45,7 +45,7 @@ think about before releasing public-facing data visualizations:
 	  only the trends are interpreted.
 * Adjusted drawing order so that data no longer obscures trendline
 * Added a zoom-in window so that the most relevant data (i.e., the past month) is readable.
-* Replaced colors with colorblind-friendly choices; the previous orange/green is one of [the least distinguishable color pairs](https://cdn-prod.medicalnewstoday.com/content/images/articles/319/319115/color-blindness.jpg) for folks with deuteranopia/anomaly, which together affect over 7% of men (i.e., almost as prevalent as left-handedness).
+* Replaced colors with colorblind-friendly choices; the previous orange/green is one of [the least distinguishable color pairs](https://cdn-prod.medicalnewstoday.com/content/images/articles/319/319115/color-blindness.jpg) for folks with red-green colorblindness, which affects over 7% of men (i.e., almost as prevalent as left-handedness).
 
 #### Non-log-scale Version
 
