@@ -186,6 +186,7 @@ plt.savefig("assets/after.svg")
 
 for a in ax:
     a.set_yscale('log')
+    plt.ylim(bottom=0)
 
 plt.savefig("assets/after-log.svg")
 
