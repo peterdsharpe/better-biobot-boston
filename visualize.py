@@ -3,7 +3,7 @@ from get_data import data
 import matplotlib.pyplot as plt
 import aerosandbox.tools.pretty_plots as p
 import datetime
-from scipy import interpolate
+from aerosandbox.tools.pretty_plots.utilities.natural_univariate_spline import NaturalUnivariateSpline as Spline
 from tqdm import tqdm
 from utilities.estimate_measurement_stdev import estimated_log_stdev
 
@@ -72,7 +72,7 @@ def make_plot(zoomed=False):
 
             weights = np.diff(np.sort(splits))
 
-            y_bootstrap_fits[i, :] = interpolate.UnivariateSpline(
+            y_bootstrap_fits[i, :] = Spline(
                 x=x,
                 y=y,
                 w=weights,
