@@ -1,85 +1,150 @@
 import numpy as np
-from get_data import (dates, north, south, north_ci, south_ci)
+from get_data import data
 import matplotlib.pyplot as plt
 import aerosandbox.tools.pretty_plots as p
 import datetime
-from scipy import ndimage
+from scipy import interpolate
+from tqdm import tqdm
+from utilities.estimate_measurement_stdev import estimated_log_stdev
 
-north_color = p.palettes['categorical'][0]
-south_color = p.palettes['categorical'][1]
+np.random.seed(0)
+
+data["North"]["color"] = p.palettes['categorical'][0]
+data["South"]["color"] = p.palettes['categorical'][1]
+data["North"]["zorder"] = 6
+data["South"]["zorder"] = 5
+
+today = datetime.datetime.today()
 
 zoom_days = 28
 zoom_range = (
-    datetime.datetime.today() - datetime.timedelta(days=28),
-    datetime.datetime.today()
+    today - datetime.timedelta(days=28),
+    today
 )
 
 
-def filter(array):
-    # not_nan_indices = np.argwhere(~np.isnan(array))
-    # first = not_nan_indices[0, 0]
-    # last = not_nan_indices[-1, 0] + 1
-    isnan = np.isnan(array)
+def make_plot(zoomed=False):
+    for region_name, region_data in data.items():
+        plt.plot([], [], "-",
+                 color=region_data["color"],
+                 label=f"{region_name} Region"
+                 )
 
-    output = np.empty_like(array)
-    output[:] = np.NaN
-    output[~isnan] = np.exp(ndimage.gaussian_filter(
-        np.log(array)[~isnan],
-        sigma=2,
-        mode='nearest',
-        truncate=4,
-    ))
-    return output
-
-
-def zoom(dates, data):
-    return dates, data
-
-
-def make_plot(draw_individual_data=True):
-    plt.plot([], [], "-", color=north_color, label="North")
-    plt.plot([], [], "-", color=south_color, label="South")
-    if draw_individual_data:
-        plt.errorbar(
-            dates,
-            north,
-            yerr=north_ci,
-            fmt=".",
-            color=north_color,
-            alpha=0.3
+        plt.plot(
+            region_data["dates"],
+            region_data["values"] / 1e3,
+            ".",
+            color=region_data["color"],
+            markeredgewidth=0,
+            markersize=4 if zoomed else 2.5,
+            alpha=0.8,
+            zorder=region_data["zorder"]
         )
-        plt.errorbar(
-            dates, south,
-            yerr=south_ci,
-            fmt=".",
-            color=south_color,
-            alpha=0.3
+
+        x=region_data["dates"].astype(float)
+        y=np.log(region_data["values"] / 1e3)
+        y_stdev=estimated_log_stdev
+        n_bootstraps=200
+        n_fit_points=1500
+        spline_degree=3
+
+        ### Discard any NaN points
+        isnan = np.logical_or(
+            np.isnan(x),
+            np.isnan(y),
         )
-    plt.plot(
-        *zoom(dates, filter(north)), '-',
-        color=north_color,
-        alpha=0.8,
-        zorder=4,
-    )
-    plt.plot(
-        *zoom(dates, filter(south)), '-',
-        color=south_color,
-        alpha=0.8,
-        zorder=3
+        x = x[~isnan]
+        y = y[~isnan]
+
+        ### Prepare for the bootstrap
+        x_fit = np.linspace(x.min(), np.datetime64(today).astype('datetime64[s]').astype(float) / 86400, n_fit_points)
+
+        y_bootstrap_fits = np.empty((n_bootstraps, len(x_fit)))
+
+        for i in tqdm(range(n_bootstraps), desc="Bootstrapping", unit=" samples"):
+
+            ### Obtain a bootstrap resample
+            ### Here, instead of truly resampling, we just pick weights that effectively mimic a resample.
+            ### A computationally-efficient way to pick weights is the following clever trick with uniform sampling:
+            splits = np.random.rand(len(x) + 1) * len(x)  # "limit" bootstrapping
+            splits[0] = 0
+            splits[-1] = len(x)
+
+            weights = np.diff(np.sort(splits))
+
+            y_bootstrap_fits[i, :] = interpolate.UnivariateSpline(
+                x=x,
+                y=y,
+                w=weights,
+                s=len(x) * y_stdev,
+                k=spline_degree,
+                ext='extrapolate'
+            )(x_fit)
+
+        xb = x_fit
+        yb = y_bootstrap_fits
+
+        xb = (xb * 86400).astype('datetime64[s]')
+        yb = np.exp(yb)
+
+        plt.plot(
+            xb,
+            np.nanquantile(yb, q=0.5, axis=0),
+            color=region_data["color"],
+            linewidth=1,
+            zorder=region_data["zorder"] + 0.2
+        )
+        plt.fill_between(
+            xb,
+            *np.nanquantile(
+                yb,
+                q=[
+                    (1 - 0.95) / 2,
+                    1 - (1 - 0.95) / 2,
+                ],
+                axis=0
+            ),
+            color=region_data["color"],
+            alpha=0.3,
+            linewidth=0,
+            zorder=region_data["zorder"] + 0.1
+        )
+
+        # plt.plot(
+        #     region_data["dates"],
+        #     filter(region_data["values"]),
+        #     '-',
+        #     color=region_data["color"],
+        #     alpha=0.8,
+        #     zorder=4,
+        # )
+
+    plt.ylabel("RNA copies/μL")
+    p.set_ticks(y_major=2, y_minor=0.5)
+
+    plt.plot([], [], ".k",
+             markeredgewidth=0,
+             markersize=4,
+             alpha=0.8,
+             label="Data"
+             )
+    plt.fill_between(
+        [],
+        [],
+        [],
+        color="k",
+        alpha=0.3,
+        label="95% CI"
     )
 
-    plt.ylabel("RNA copies/mL")
-    p.set_ticks(y_major=5000, y_minor=1000)
-    plt.ylim(bottom=0, top=12000)
-    plt.yscale('log')
 
 fig, ax = plt.subplots(2, 1, figsize=(7, 7))
 
 plt.sca(ax[0])
-make_plot(draw_individual_data=False)
+make_plot()
 plt.title("Overview")
 plt.gca().xaxis.set_major_formatter(
-    p.mpl.dates.DateFormatter('%b \'%y')
+    p.mpl.dates.DateFormatter('%b. 1\n\'%y')
 )
 plt.gca().xaxis.set_major_locator(
     p.mpl.dates.MonthLocator([1, 4, 7, 10])
@@ -87,12 +152,18 @@ plt.gca().xaxis.set_major_locator(
 plt.gca().xaxis.set_minor_locator(
     p.mpl.dates.MonthLocator()
 )
+plt.xlim(right=datetime.datetime.today())
+# plt.ylim(bottom=0, top=12000)
+# plt.yscale('log')
+plt.legend(
+    ncol=2
+)
 
 plt.sca(ax[1])
-make_plot()
-plt.title(f"Recent {zoom_days} Days")
+make_plot(zoomed=True)
+plt.title(f"Zoom-in of Recent {zoom_days} Days")
 plt.gca().xaxis.set_major_formatter(
-    p.mpl.dates.DateFormatter('%a.\n%b. %d')
+    p.mpl.dates.DateFormatter('%a.\n%b. %#d')
 )
 plt.gca().xaxis.set_major_locator(
     p.mpl.dates.WeekdayLocator([p.mpl.dates.SU])
@@ -101,8 +172,22 @@ plt.gca().xaxis.set_minor_locator(
     p.mpl.dates.DayLocator()
 )
 plt.xlim(zoom_range)
+# plt.ylim(bottom=0, top=2000)
+# plt.yscale('log')
 
 # plt.gcf().autofmt_xdate(rotation=45, ha='center')
 p.show_plot(
-    "DITP Viral RNA Signal",
+    "Boston COVID-19 Wastewater Data\nBiobot Analytics",
+    legend=False,
+    dpi=600,
+    show=False
 )
+
+plt.savefig("assets/after.png")
+
+for a in ax:
+    a.set_yscale('log')
+
+plt.savefig("assets/after-log.png")
+
+plt.show()

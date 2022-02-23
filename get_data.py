@@ -5,7 +5,6 @@ import tempfile
 from pathlib import Path
 import numpy as np
 
-
 ### Get the right link to the data
 html = requests.get(
     url="https://www.mwra.com/biobot/biobotdata.htm", allow_redirects=True,
@@ -58,19 +57,33 @@ for col in df.columns:
 
 # Remove NaN rows at the end
 df = df.loc[
-    df.iloc[:, 1:].first_valid_index():
-    df.iloc[:, 1:].last_valid_index()
-]
+     df.iloc[:, 1:].first_valid_index():
+     df.iloc[:, 1:].last_valid_index()
+     ]
 
 # Partition the data
-dates = df["Sample Date"].values
+dates = df["Sample Date"].values.astype('datetime64[D]')
 north = df["Northern\r(copies/mL)"].values
 south = df["Southern\r(copies/mL)"].values
 north_ci = (
     df["Northern\rLow Confidence\rInterval"].values,
     df["Northern\rHigh Confidence\rInterval"].values
 )
-south_ci =(
+south_ci = (
     df["Southern\rLow Confidence\rInterval"].values,
     df["Southern\rHigh Confidence\rInterval"].values
 )
+
+# Group the data
+data = {
+    "North": {
+        "dates" : dates,
+        "values": north,
+        "ci"    : north_ci
+    },
+    "South": {
+        "dates" : dates,
+        "values": south,
+        "ci"    : south_ci
+    }
+}
