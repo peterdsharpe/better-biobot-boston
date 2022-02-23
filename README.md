@@ -8,7 +8,7 @@ Before and after:
 
 ## After
 
-![](assets/after-log.svg)
+<img src="assets/after-log.svg" width="100%">
 
 ## Before
 
@@ -47,7 +47,7 @@ think about before releasing public-facing data visualizations:
 
 #### Non-log-scale Version
 
-![](assets/after.svg)
+<img src="assets/after.svg" width="100%">
 
 ## Instructions to Run
 
