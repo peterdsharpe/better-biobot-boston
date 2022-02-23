@@ -182,11 +182,11 @@ p.show_plot(
     show=False
 )
 
-plt.savefig("assets/after.jpg", dpi=400)
+plt.savefig("assets/after.svg")
 
 for a in ax:
     a.set_yscale('log')
 
-plt.savefig("assets/after-log.jpg", dpi=400)
+plt.savefig("assets/after-log.svg")
 
 plt.show()
