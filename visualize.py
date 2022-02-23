@@ -44,7 +44,7 @@ def make_plot(zoomed=False):
         x=region_data["dates"].astype(float)
         y=np.log(region_data["values"] / 1e3)
         y_stdev=estimated_log_stdev
-        n_bootstraps=20
+        n_bootstraps=2000
         n_fit_points=1800
         spline_degree=3
 
