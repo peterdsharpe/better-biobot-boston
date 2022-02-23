@@ -4,3 +4,7 @@ tabula-py
 pandas
 numpy
 lxml
+aerosandbox
+matplotlib
+scipy
+tqdm
