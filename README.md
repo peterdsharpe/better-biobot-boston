@@ -8,7 +8,9 @@ Before and after:
 
 ## After
 
-<img src="assets/after-log.svg" width="100%">
+(click to zoom)
+
+[<img src="assets/after-log.svg" width="100%">](https://raw.githubusercontent.com/peterdsharpe/better-biobot-boston/master/assets/after-log.svg)
 
 ## Before
 
@@ -47,7 +49,9 @@ think about before releasing public-facing data visualizations:
 
 #### Non-log-scale Version
 
-<img src="assets/after.svg" width="100%">
+(click to zoom)
+
+[<img src="assets/after.svg" width="100%">](https://raw.githubusercontent.com/peterdsharpe/better-biobot-boston/master/assets/after.svg)
 
 ## Instructions to Run
 
