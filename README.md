@@ -27,8 +27,7 @@ think about before releasing public-facing data visualizations:
 	* Allows outlier identification based on a quantitative metric
 	* Smooths the data based on a quantitative metric: the standard deviation of
 * Drew 95% confidence interval based on bootstrapped data
-	* Shows how uncertainty grows during time period where sampling was less frequent (e.g., May 2020, the past few days
-	  due to data lag)
+	* Shows how uncertainty grows during time period where sampling was less frequent (e.g., May 2020), noisy (e.g., June 2021), or missing (e.g., the past few days or so, due to data lag).
 	* Allows forecasting of future disease burden while communicating the increased uncertainty as the forecasting
 	  interval grows
 * Switched to a log scale, so that exponentially-growing or -shrinking disease burdens can be

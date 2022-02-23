@@ -43,5 +43,3 @@ ratios = pairs[:, 1] / pairs[:, 0]
 estimated_log_stdev = np.log(np.median(
     np.maximum(ratios, 1/ratios)
 ))
-
-estimated_log_stdev /= 2 ** 0.5 # Because we are looking at the difference of two independent normal distributions
