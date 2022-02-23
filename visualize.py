@@ -179,15 +179,14 @@ plt.xlim(zoom_range)
 p.show_plot(
     "Boston COVID-19 Wastewater Data\nBiobot Analytics",
     legend=False,
-    dpi=600,
     show=False
 )
 
-plt.savefig("assets/after.png")
+plt.savefig("assets/after.jpg", dpi=400)
 
 for a in ax:
     a.set_yscale('log')
 
-plt.savefig("assets/after-log.png")
+plt.savefig("assets/after-log.jpg", dpi=400)
 
 plt.show()

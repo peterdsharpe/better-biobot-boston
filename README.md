@@ -8,7 +8,7 @@ Before and after:
 
 ## After
 
-![](assets/after-log.png)
+![](assets/after-log.jpg)
 
 ## Before
 
@@ -47,7 +47,7 @@ think about before releasing public-facing data visualizations:
 
 #### Non-log-scale Version
 
-![](assets/after.png)
+![](assets/after.jpg)
 
 ## Instructions to Run
 
