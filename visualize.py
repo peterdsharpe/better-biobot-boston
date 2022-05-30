@@ -99,8 +99,8 @@ def make_plot(zoomed=False):
             *np.nanquantile(
                 yb,
                 q=[
-                    (1 - 0.95) / 2,
-                    1 - (1 - 0.95) / 2,
+                    (1 - 0.75) / 2,
+                    1 - (1 - 0.75) / 2,
                 ],
                 axis=0
             ),
@@ -134,7 +134,7 @@ def make_plot(zoomed=False):
         [],
         color="k",
         alpha=0.3,
-        label="95% CI"
+        label="75% CI"
     )
 
 
