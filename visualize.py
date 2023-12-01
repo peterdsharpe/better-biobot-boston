@@ -147,7 +147,7 @@ plt.gca().xaxis.set_major_formatter(
     p.mpl.dates.DateFormatter('%b. 1\n\'%y')
 )
 plt.gca().xaxis.set_major_locator(
-    p.mpl.dates.MonthLocator([1, 4, 7, 10])
+    p.mpl.dates.MonthLocator([1, 7])
 )
 plt.gca().xaxis.set_minor_locator(
     p.mpl.dates.MonthLocator()
@@ -155,7 +155,8 @@ plt.gca().xaxis.set_minor_locator(
 plt.xlim(right=datetime.datetime.today())
 plt.ylim(bottom=0)
 plt.legend(
-    ncol=2
+    ncol=2,
+    framealpha=0
 )
 
 plt.sca(ax[1])
@@ -177,7 +178,8 @@ plt.ylim(bottom=0)
 p.show_plot(
     "Boston COVID-19 Wastewater Data\nBiobot Analytics",
     legend=False,
-    show=False
+    show=False,
+    set_ticks=False,
 )
 
 plt.savefig("assets/after.svg")
