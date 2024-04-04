@@ -1,0 +1,46 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actionson push
+
+name: Update Charts
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+    - name: Set up Java
+      uses: actions/setup-java@v2.5.0
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        java-package: jre
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Set up Git credentials
+      run: |
+        git config --global user.email "pds@mit.edu"
+        git config --global user.name "Automated Updater"
+    - name: Git pull
+      run: |
+        git pull
+    - name: Generate Charts
+      run: |
+        python visualize.py
+    - name: Commit back to the repo to update
+      run: |
+        git add .
+        git commit -m "Automated daily update"
+        git push

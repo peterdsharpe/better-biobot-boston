@@ -1,0 +1,10 @@
+bs4
+requests
+tabula-py
+pandas
+numpy
+lxml
+aerosandbox
+matplotlib
+scipy
+tqdm
